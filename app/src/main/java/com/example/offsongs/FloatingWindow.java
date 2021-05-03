@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Build;
+import android.os.Environment;
 import android.os.IBinder;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -24,6 +25,10 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.example.offsongs.Common.Common;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class FloatingWindow extends Service {
 
@@ -55,7 +60,7 @@ public class FloatingWindow extends Service {
         // the height and width of the floating window is set depending on this
         DisplayMetrics metrics = getApplicationContext().getResources().getDisplayMetrics();
         int width = metrics.widthPixels;
-        int height = metrics.heightPixels;
+        // int height = metrics.heightPixels;
 
         // To obtain a WindowManager of a different Display,
         // we need a Context for that display, so WINDOW_SERVICE is used
@@ -71,6 +76,23 @@ public class FloatingWindow extends Service {
         // The Buttons and the EditText are connected with
         // the corresponding component id used in floating_layout xml file
         maximizeBtn = floatView.findViewById(R.id.buttonMaximize);
+        String data = "";
+        try {
+            File myObj = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),"song.txt");
+            Scanner myReader = new Scanner(myObj);
+            data = myReader.nextLine();
+//            while (myReader.hasNextLine()) {
+//                String data = myReader.nextLine();
+//                System.out.println(data);
+//            }
+            myReader.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+
+        maximizeBtn.setText(data);
         // descEditArea = floatView.findViewById(R.id.descEditText);
         // saveBtn = floatView.findViewById(R.id.saveBtn);
 
