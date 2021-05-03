@@ -28,7 +28,12 @@ import com.example.offsongs.Common.Common;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
+import java.util.TimeZone;
 
 public class FloatingWindow extends Service {
 
@@ -76,23 +81,35 @@ public class FloatingWindow extends Service {
         // The Buttons and the EditText are connected with
         // the corresponding component id used in floating_layout xml file
         maximizeBtn = floatView.findViewById(R.id.buttonMaximize);
+        DateFormat formatter = new SimpleDateFormat("mm:ss.SS");
+        formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        String timeString = "00:00.00";
+        long timeMillis = 0;
         String data = "";
+        maximizeBtn.setText("song");
         try {
             File myObj = new File(getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS),"song.txt");
             Scanner myReader = new Scanner(myObj);
-            data = myReader.nextLine();
-//            while (myReader.hasNextLine()) {
-//                String data = myReader.nextLine();
-//                System.out.println(data);
-//            }
+
+            while (myReader.hasNextLine()) {
+                String line = myReader.nextLine();
+                timeString = line.substring(1,8);
+                Date time = formatter.parse(line.substring(1,8));
+                long millis = time.getTime();
+                long resta = millis - timeMillis;
+                Thread.sleep(millis - timeMillis);
+                timeMillis = millis;
+                data = line.substring(10);
+                maximizeBtn.setText(data);
+            }
             myReader.close();
-        } catch (FileNotFoundException e) {
+        } catch (FileNotFoundException | ParseException | InterruptedException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
 
 
-        maximizeBtn.setText(data);
+
         // descEditArea = floatView.findViewById(R.id.descEditText);
         // saveBtn = floatView.findViewById(R.id.saveBtn);
 
